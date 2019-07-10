@@ -17,10 +17,26 @@
 (defn process-url [url]
   (let [feed (:feed (remus/parse-url url))
         all-keys (keys (first (:entries feed)))
-        entries (map (fn [entry] (select-keys entry '(:published-date :updated-date :title :link)))
-                     (:entries feed))]
-    (clojure.pprint/pprint (map normalize-date-key entries))
-    (clojure.pprint/pprint all-keys)))
+        ; add title
+        title (:title feed)
+        entries (->> (:entries feed)
+                     (map (fn [entry] (select-keys entry '(:published-date :updated-date :title :link))))
+                     (map normalize-date-key)
+                     (map #(assoc % :feed-title (:title feed))))
+        formatted-entries (map format-entry entries)]
+    (map println formatted-entries)))
+
+
+(defn simple-format-date [date]
+  (let [formatter (java.text.SimpleDateFormat. "yyyy-MM-dd")]
+    (.format formatter date)))
+
+
+(defn format-entry [entry]
+  (clojure.string/join " | " [(:feed-title entry)
+                              (simple-format-date (:date entry))
+                              (:title entry)
+                              (:link entry)]))
 
 
 (defn main [urls-list-filename]
