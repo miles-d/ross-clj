@@ -1,0 +1,14 @@
+= RoSS - RSS fetcher =
+
+- There will be a file with URL to atom/rss feed on each line
+- Get the xml from each of them and keep in memory
+- For each xml, parse it and get items from last week / since last synchronization
+- It could be run from cron, or keep it's own timekeeping.  Probably better from cron.
+- On each run, a plaintext email should be formed with dates, links and titles to all new items.
+  This could be done by another small program, I think.
+- Is there anything that needs to be retained?
+  - date of last synchronization - maybe
+- What is the input?  What is the output?
+  - Input: list of feed URLs
+  - Output: list of date|title|link of articles published during the last week (it could be csv or
+    tsv)
