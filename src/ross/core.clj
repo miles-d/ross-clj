@@ -1,6 +1,8 @@
 (ns ross.core
   (:require [remus]))
 
+(def *OLDEST-POST-AGE-DAYS* 7)
+
 (defn parse-url-list [lines]
   (clojure.string/split lines #"\n"))
 
@@ -29,7 +31,7 @@
         entries (->> (:entries feed)
                      (map (fn [entry] (select-keys entry '(:published-date :updated-date :title :link))))
                      (map normalize-date-key)
-                     (filter (partial  newer-than-n-days-ago? 7 (java.util.Date.)))
+                     (filter (partial  newer-than-n-days-ago? *OLDEST-POST-AGE-DAYS* (java.util.Date.)))
                      (map #(assoc % :feed-title (:title feed))))
         formatted-entries (map format-entry entries)]
     (map println formatted-entries)))
