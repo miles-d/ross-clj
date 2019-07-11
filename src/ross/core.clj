@@ -9,7 +9,7 @@
 ;; Reconcile this by taking either as "date".
 (defn normalize-date-key [feed-entry]
   (dissoc (assoc feed-entry :date (or (:published-date feed-entry)
-                   (:updated-date feed-entry)))
+                                      (:updated-date feed-entry)))
           :published-date
           :updated-date))
 
