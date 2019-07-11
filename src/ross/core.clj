@@ -14,6 +14,13 @@
           :updated-date))
 
 
+(defn newer-than-n-days-ago? [num-of-days now entry]
+  (>= num-of-days
+      (/ (- (.getTime now)
+            (.getTime (:date entry)))
+         (* 1000 60 60 24))))
+
+
 (defn process-url [url]
   (let [feed (:feed (remus/parse-url url))
         all-keys (keys (first (:entries feed)))
@@ -22,6 +29,7 @@
         entries (->> (:entries feed)
                      (map (fn [entry] (select-keys entry '(:published-date :updated-date :title :link))))
                      (map normalize-date-key)
+                     (filter (partial  newer-than-n-days-ago? 7 (java.util.Date.)))
                      (map #(assoc % :feed-title (:title feed))))
         formatted-entries (map format-entry entries)]
     (map println formatted-entries)))
