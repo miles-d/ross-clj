@@ -1,14 +1,18 @@
 # ross
 
-A Clojure library designed to ... well, that part is up to you.
+RSS/Atom fetcher.  It takes a list of feed URLs as input, and outputs a list of
+articles from the last week.  I email it to myself once a week, so I don't get
+disturbed by checking RSS app every day.
+
+Work in progress.
 
 ## Usage
 
-FIXME
+lein run <FEEDS-FILE>
 
 ## License
 
-Copyright © 2019 FIXME
+Copyright © 2019 Milosz Danczak
 
 This program and the accompanying materials are made available under the
 terms of the Eclipse Public License 2.0 which is available at
