@@ -8,7 +8,7 @@ Work in progress.
 
 ## Usage
 
-lein run <FEEDS-FILE>
+lein run FEEDS-FILE
 
 ## License
 
