@@ -2,8 +2,6 @@
   (:gen-class)
   (:require [remus]))
 
-(def OLDEST-POST-AGE-DAYS 7)
-
 (defn parse-url-list [lines]
   (clojure.string/split lines #"\n"))
 
@@ -36,7 +34,7 @@
                               (:link entry)]))
 
 
-(defn process-url [url]
+(defn process-url [url num-of-days]
   (let [feed (:feed (remus/parse-url url))
         all-keys (keys (first (:entries feed)))
         ; add title
@@ -46,7 +44,7 @@
                             (select-keys entry
                                          '(:published-date :updated-date :title :link))))
                      (map normalize-date-key)
-                     (filter (partial  newer-than-n-days-ago? OLDEST-POST-AGE-DAYS (java.util.Date.)))
+                     (filter (partial  newer-than-n-days-ago? num-of-days (java.util.Date.)))
                      (map #(assoc % :feed-title (:title feed))))
         formatted-entries (map format-entry entries)]
     (doall (map println formatted-entries))))
@@ -55,6 +53,9 @@
 (defn -main [& args]
   (if (empty? args)
     (println "Usage: ross <FEED_LIST_FILE>")
-    (doall (map process-url
-                (parse-url-list
-                  (slurp (first args)))))))
+    (let [num-of-days (if (second args)
+                        (read-string (second args))
+                        7)]
+      (doall (map #(process-url % num-of-days)
+                  (parse-url-list
+                    (slurp (first args))))))))

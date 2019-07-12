@@ -8,7 +8,9 @@ Work in progress.
 
 ## Usage
 
-lein run FEEDS-FILE
+lein run FEEDS-FILE [number-of-days]
+
+By default, `number-of-days` is 7.
 
 ## License
 
