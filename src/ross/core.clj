@@ -28,7 +28,7 @@
 
 
 (defn format-entry [entry]
-  (clojure.string/join " | " [(:feed-title entry)
+  (clojure.string/join "\n" [(:feed-title entry)
                               (simple-format-date (:date entry))
                               (:title entry)
                               (:link entry)]))
@@ -37,7 +37,6 @@
 (defn process-url [url num-of-days]
   (let [feed (:feed (remus/parse-url url))
         all-keys (keys (first (:entries feed)))
-        ; add title
         title (:title feed)
         entries (->> (:entries feed)
                      (map (fn [entry]
@@ -47,15 +46,27 @@
                      (filter (partial  newer-than-n-days-ago? num-of-days (java.util.Date.)))
                      (map #(assoc % :feed-title (:title feed))))
         formatted-entries (map format-entry entries)]
-    (doall (map println formatted-entries))))
+    formatted-entries))
 
 
-(defn -main [& args]
+(defn main [& args]
   (if (empty? args)
     (println "Usage: ross <FEED_LIST_FILE>")
     (let [num-of-days (if (second args)
                         (read-string (second args))
-                        7)]
-      (doall (map #(process-url % num-of-days)
-                  (parse-url-list
-                    (slurp (first args))))))))
+                        7)
+          urls (parse-url-list (slurp  (first args)))
+          results (agent [] :error-handler println)]
+      (doseq [url urls]
+        (send-off results
+                  (fn [state] (conj state (process-url url num-of-days)))))
+      (await results)
+      (print (clojure.string/join "\n\n" (flatten @results)))
+      (println)
+      nil)))
+
+
+(defn -main [& args]
+  (apply main args)
+  (shutdown-agents)
+  (flush))
